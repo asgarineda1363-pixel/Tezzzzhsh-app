@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تمرین تیزهوشان</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#FF7A1A">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{
+  --paper:#EDF3FF; --grid:rgba(60,80,160,.11);
+  --ink:#171B3A; --ink2:#4A5080; --card:#FFFFFF; --line:#171B3A; --shadow:#171B3A;
+  --orange:#FF7A1A; --grape:#5B3FE0; --mint:#0E9F77; --red:#D9363E;
+  --okbg:#DDF7EC; --nobg:#FFE3E3; --tipbg:#EFE9FF;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#12142A; --grid:rgba(150,160,255,.08);
+    --ink:#F2F3FF; --ink2:#A9AEDC; --card:#1E2142; --line:#F2F3FF; --shadow:#000;
+    --orange:#FF9142; --grape:#9C86FF; --mint:#38D9A9; --red:#FF7B80;
+    --okbg:#103A33; --nobg:#4A1F29; --tipbg:#2B2557;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink);
+  font-family:'Vazirmatn','IRANSans','Noto Sans Arabic','Tahoma',system-ui,sans-serif;
+  line-height:1.7; min-height:100vh;
+}
+#app{max-width:480px;margin:0 auto;padding:16px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--grape);outline-offset:2px}
+h1{font-size:28px;line-height:1.35;margin:0;font-weight:800}
+h2{font-size:18px;margin:24px 0 10px;font-weight:800}
+p{margin:0}
+
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:8px 0 18px}
+.sub{color:var(--ink2);font-size:14px;margin-top:4px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-size:14px;font-weight:700;background:var(--card);white-space:nowrap}
+
+.btn{display:block;width:100%;text-align:right;border:3px solid var(--line);border-radius:16px;background:var(--card);padding:14px 16px;box-shadow:4px 4px 0 var(--shadow);font-weight:700;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow)}
+.btn small{display:block;font-weight:500;color:var(--ink2);font-size:13px}
+.btn.main{background:var(--orange);color:#171B3A;font-size:19px}
+.btn.main small{color:#3a2a14}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.stack{display:grid;gap:14px}
+.ghost{border:2px solid var(--line);background:transparent;border-radius:12px;padding:4px 12px;font-weight:700}
+
+.skill{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px;margin-bottom:10px}
+.skill .bar{grid-column:1/-1;height:10px;border:2px solid var(--line);border-radius:6px;background:var(--card);overflow:hidden}
+.skill .bar i{display:block;height:100%;background:var(--mint)}
+.skill .bar i.low{background:var(--orange)}
+.hint{color:var(--ink2);font-size:14px}
+
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.prog{flex:1;display:flex;gap:4px}
+.prog i{flex:1;height:10px;border:2px solid var(--line);border-radius:5px;background:var(--card)}
+.prog i.ok{background:var(--mint)} .prog i.no{background:var(--red)} .prog i.cur{background:var(--orange)}
+.qcard{border:3px solid var(--line);border-radius:18px;background:var(--card);padding:16px;box-shadow:4px 4px 0 var(--shadow)}
+.qmeta{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);margin-bottom:8px;font-weight:700}
+.qtext{font-size:18px;line-height:2;font-weight:600}
+.qtext table{border-collapse:collapse;margin:8px auto;direction:ltr}
+.qtext td{border:2px solid var(--line);padding:2px 8px;text-align:center;font-size:18px;min-width:30px}
+.qtext .digits,.qtext .letters{display:block;direction:ltr;text-align:center;font-size:22px;letter-spacing:2px;margin:6px 0;word-break:break-all;font-weight:700}
+.qtext .letters{letter-spacing:6px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{display:flex;align-items:center;gap:12px;text-align:right;width:100%;border:3px solid var(--line);border-radius:14px;background:var(--card);padding:10px 12px;font-size:18px;font-weight:600;min-height:54px}
+.opt b{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:15px}
+.opt span{flex:1;word-break:break-word}
+.opt:not(:disabled):active{background:var(--tipbg)}
+.opt.right{background:var(--okbg);border-color:var(--mint)}
+.opt.wrong{background:var(--nobg);border-color:var(--red)}
+.opt.dim{opacity:.55}
+.goal{margin-top:14px;color:var(--ink2);font-size:14px;text-align:center}
+
+.fb{margin-top:16px;display:grid;gap:12px}
+.verdict{font-weight:800;font-size:19px}
+.verdict.ok{color:var(--mint)} .verdict.no{color:var(--red)}
+.tip{border:3px solid var(--line);border-radius:16px;background:var(--tipbg);padding:14px}
+.tip h3{margin:0 0 6px;font-size:16px;font-weight:800}
+.tip p{font-size:16px;line-height:2}
+.tip .acts{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.note{font-size:13px;color:var(--ink2)}
+
+.tcard{position:relative;width:100%;aspect-ratio:3/4;border:3px solid #171B3A;border-radius:18px;box-shadow:4px 4px 0 var(--shadow);padding:10px;display:flex;flex-direction:column;justify-content:space-between;color:#171B3A;overflow:hidden;text-align:center}
+.tcard::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.0) 0 14px,rgba(255,255,255,.22) 14px 20px);pointer-events:none}
+.tcard .tt{display:flex;justify-content:space-between;font-size:12px;font-weight:800}
+.tcard .ti{font-size:52px;line-height:1}
+.tcard .tn{font-size:14px;font-weight:800;line-height:1.5}
+.tcard .tf{font-size:12px;font-weight:700}
+.r-gold{background:linear-gradient(150deg,#FFE680,#FF9F1C)}
+.r-silver{background:linear-gradient(150deg,#F4F7FB,#9FB0C8)}
+.r-bronze{background:linear-gradient(150deg,#F7C9A4,#B8693A)}
+.reward{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+.reward p{font-weight:800;font-size:17px}
+.reward p small{display:block;font-weight:500;color:var(--ink2);font-size:14px}
+@media (prefers-reduced-motion:no-preference){
+  .pop{animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes pop{from{transform:rotate(-8deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.tot{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.dotg,.dots,.dotb{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid var(--line);margin-left:6px;vertical-align:middle}
+.dotg{background:#FFC63D}.dots{background:#B9C6DA}.dotb{background:#C77B45}
+.sum{text-align:center;margin:18px 0}
+.sum .big{font-size:56px;font-weight:800;line-height:1.2}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.strip .tcard{padding:6px;box-shadow:2px 2px 0 var(--shadow)}
+.strip .ti{font-size:28px}.strip .tt,.strip .tn,.strip .tf{display:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(()=>{
+'use strict';
+
+const FA='۰۱۲۳۴۵۶۷۸۹';
+const fa=v=>String(v).replace(/\d/g,d=>FA[d]);
+let rng=Math.random;
+function seeded(str){
+  let h=1779033703^str.length;
+  for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;}
+  let a=h>>>0;
+  return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+}
+const ri=(a,b)=>a+Math.floor(rng()*(b-a+1));
+const pick=a=>a[Math.floor(rng()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+function numChoices(c,near=[]){
+  const s=[c];
+  const add=x=>{if(Number.isInteger(x)&&x>0&&!s.includes(x)&&s.length<4)s.push(x);};
+  near.forEach(add);
+  shuffle([c+1,c-1,c+2,c-2,c+3,c-3,c*2,c+10,c-10]).forEach(add);
+  let k=4;while(s.length<4){add(c+k++);}
+  const arr=shuffle(s);
+  return{opts:arr.map(fa),ans:arr.indexOf(c)};
+}
+function txtChoices(c,wrongs){
+  const arr=shuffle([c,...wrongs.slice(0,3)]);
+  return{opts:arr,ans:arr.indexOf(c)};
+}
+const NAMES=['علی','سارا','رضا','مینا','آرش','نیلا','امیر','هانیه','پارسا','ترانه'];
+
+const gens=[];
+const G=(id,cat,icon,skill,fn)=>gens.push({id,cat,icon,skill,fn});
+
+G('seq','T','🔢','دنباله‌ها',()=>{
+  const t=ri(0,3);let terms,next,trick,tech;
+  if(t===0){
+    const s=ri(2,9),d=ri(3,8);terms=[0,1,2,3,4].map(i=>s+d*i);next=s+d*5;
+    trick='فاصلهٔ جمله‌ها را بنویس';
+    tech=`فاصلهٔ هر دو جملهٔ کنار هم را حساب کن: همیشه ${fa(d)} است. پس جملهٔ بعدی ${fa(terms[4])} به‌علاوهٔ ${fa(d)} می‌شود، یعنی ${fa(next)}.`;
+  }else if(t===1){
+    const s=ri(1,4),a=ri(1,3);
+    const t0=s,t1=t0+a,t2=t1*2,t3=t2+a,t4=t3*2;terms=[t0,t1,t2,t3,t4];next=t4+a;
+    trick='دو عمل که نوبتی تکرار می‌شوند';
+    tech=`فاصله‌ها یکسان نیستند، پس احتمالاً دو عمل نوبتی تکرار می‌شود. از ${fa(t0)} به ${fa(t1)} یعنی به‌علاوهٔ ${fa(a)}. از ${fa(t1)} به ${fa(t2)} یعنی ضرب در دو. بعدش دوباره به‌علاوه و ضرب. جمله‌ای که قبل از جملهٔ آخر بود ضرب در دو بود، پس نوبت به‌علاوهٔ ${fa(a)} است: ${fa(t4)} به‌علاوهٔ ${fa(a)} می‌شود ${fa(next)}.`;
+  }else if(t===2){
+    const k=ri(0,3);terms=[1,2,3,4,5].map(i=>i*i+k);next=36+k;
+    trick='فاصله‌ها هم الگو دارند';
+    tech=`فاصلهٔ جمله‌ها را بنویس: ${fa(3)}، ${fa(5)}، ${fa(7)}، ${fa(9)}. خودِ فاصله‌ها هر بار دو تا بیشتر می‌شوند. فاصلهٔ بعدی ${fa(11)} است: ${fa(terms[4])} به‌علاوهٔ ${fa(11)} می‌شود ${fa(next)}.`;
+  }else{
+    const s=ri(1,6),g=ri(1,2);terms=[s];let d=g;for(let i=0;i<4;i++){terms.push(terms[i]+d);d++;}
+    next=terms[4]+d;
+    trick='فاصله‌ها یکی‌یکی بیشتر می‌شوند';
+    tech=`فاصلهٔ جمله‌ها را بنویس: ${terms.slice(1).map((x,i)=>fa(x-terms[i])).join('، ')}. هر بار یکی بیشتر می‌شود. پس فاصلهٔ بعدی ${fa(d)} است و جواب ${fa(terms[4])} به‌علاوهٔ ${fa(d)} یعنی ${fa(next)} می‌شود.`;
+  }
+  const c=numChoices(next,[next+1,next-1]);
+  return{q:`<b>${terms.map(fa).join('، ')}، ؟</b><br>جملهٔ بعدی کدام است؟`,...c,trick,tech};
+});
+
+G('shake','T','🤝','شمردن جفت‌ها',()=>{
+  const n=ri(5,9),c=n*(n-1)/2;
+  const parts=[];for(let i=n-1;i>=1;i--)parts.push(fa(i));
+  const ch=numChoices(c,[n*(n-1),c+n]);
+  return{q:`${fa(n)} دوست به مهمانی آمدند و هر دو نفر دقیقاً یک بار با هم دست دادند. در کل چند بار دست دادن انجام شد؟`,...ch,
+    trick:'یکی‌یکی کم کن و جمع بزن',
+    tech:`نفر اول با ${fa(n-1)} نفر دیگر دست می‌دهد. نفر دوم فقط با ${fa(n-2)} نفر باقی‌مانده، چون با اولی قبلاً دست داده است. همین‌طور ادامه بده و جمع بزن: ${parts.join(' به‌علاوهٔ ')} می‌شود ${fa(c)}. راه سریع‌تر: تعداد نفرها ضرب در یکی کمتر، بعد تقسیم بر دو، چون هر دست دادن را دو بار شمرده‌ایم.`};
+});
+
+G('groups','T','👥','شمردن از دو طرف',()=>{
+  const a=pick([2,3]),b=pick([4,6]),G_=a*ri(2,5),c=G_*b/a;
+  const ch=numChoices(c,[G_*b,G_+b,c+a]);
+  return{q:`دانش‌آموزان یک کلاس در ${fa(G_)} گروه تحقیقاتی عضو شده‌اند. هر دانش‌آموز دقیقاً در ${fa(a)} گروه است و هر گروه دقیقاً ${fa(b)} عضو دارد. این کلاس چند دانش‌آموز دارد؟`,...ch,
+    trick:'عضویت‌ها را بشمار، نه آدم‌ها را',
+    tech:`به‌جای شمردن دانش‌آموزها، «عضویت‌ها» را بشمار. ${fa(G_)} گروه و هر گروه ${fa(b)} عضو، یعنی ${fa(G_*b)} عضویت. ولی هر دانش‌آموز ${fa(a)} عضویت دارد و خودش را ${fa(a)} بار شمرده‌ایم. پس ${fa(G_*b)} تقسیم بر ${fa(a)} می‌شود ${fa(c)} دانش‌آموز.`};
+});
+
+G('snail','T','🐌','تله‌ی روز آخر',()=>{
+  const u=ri(3,5),d=ri(1,u-1),h=ri(u+3,u+10);
+  const x=Math.ceil((h-u)/(u-d)),days=x+1,naive=Math.ceil(h/(u-d));
+  const ch=numChoices(days,[naive,days+1,days-1]);
+  return{q:`حلزونی ته چاهی به عمق ${fa(h)} متر افتاده است. او هر روز ${fa(u)} متر بالا می‌رود و هر شب ${fa(d)} متر پایین می‌لغزد. چند روز طول می‌کشد تا به بالای چاه برسد؟`,...ch,
+    trick:'روز آخر شب ندارد',
+    tech:`نکتهٔ اصلی روز آخر است: وقتی حلزون به لبهٔ چاه می‌رسد، دیگر شبی نمی‌آید که پایین بلغزد. پس تا قبل از روز آخر باید ${fa(h-u)} متر پیشرفت کند. هر شبانه‌روز ${fa(u-d)} متر خالص بالا می‌رود. ${fa(h-u)} تقسیم بر ${fa(u-d)} را گرد به بالا کن: ${fa(x)} شبانه‌روز. یک روز آخر هم اضافه کن و جواب ${fa(days)} روز می‌شود.`};
+});
+
+G('rev','T','↩️','از آخر به اول',()=>{
+  const x=ri(3,14),a=ri(2,5),b=ri(3,9),v=ri(0,1);let r,q,tech;
+  if(v===0){
+    r=x*a-b;
+    q=`عددی را در ${fa(a)} ضرب کردم، بعد ${fa(b)} واحد از آن کم کردم و ${fa(r)} شد. عدد اولیه چند بود؟`;
+    tech=`از آخر به اول برو و هر کار را برعکس کن. آخرین کار «${fa(b)} تا کم کردن» بود، پس ${fa(b)} تا اضافه کن: ${fa(r)} به‌علاوهٔ ${fa(b)} می‌شود ${fa(r+b)}. قبلش ضرب در ${fa(a)} بود، پس تقسیم کن: ${fa(r+b)} تقسیم بر ${fa(a)} می‌شود ${fa(x)}. برای اطمینان امتحان کن: ${fa(x)} ضرب در ${fa(a)} منهای ${fa(b)} می‌شود ${fa(r)}.`;
+  }else{
+    r=(x+b)*a;
+    q=`به عددی ${fa(b)} تا اضافه کردم و حاصل را در ${fa(a)} ضرب کردم و ${fa(r)} شد. عدد اولیه چند بود؟`;
+    tech=`از آخر به اول برو و هر کار را برعکس کن. آخرین کار ضرب در ${fa(a)} بود، پس تقسیم کن: ${fa(r)} تقسیم بر ${fa(a)} می‌شود ${fa(r/a)}. قبلش ${fa(b)} تا اضافه کرده بودیم، پس کم کن: ${fa(r/a)} منهای ${fa(b)} می‌شود ${fa(x)}.`;
+  }
+  const ch=numChoices(x,[v===0?Math.round(r/a)-b:r/a+b,r+b,x+a]);
+  return{q,...ch,trick:'هر عمل را برعکس کن',tech};
+});
+
+G('consec','T','🧮','اعداد متوالی',()=>{
+  const s=pick([1,2]),k=pick([3,5]);
+  const m=s===1?ri(8,40):ri(5,20)*2,sum=k*m,big=m+s*(k-1)/2;
+  const name=s===1?'عدد متوالی':'عدد زوج متوالی';
+  const ch=numChoices(big,[m,big+s,big-s]);
+  return{q:`مجموع ${fa(k)} ${name} برابر ${fa(sum)} است. بزرگ‌ترین آن‌ها کدام است؟`,...ch,
+    trick:'میانگین همان عدد وسط است',
+    tech:`وقتی عددها متوالی هستند، میانگینشان همان عدد وسط است. ${fa(sum)} تقسیم بر ${fa(k)} می‌شود ${fa(m)}، پس عدد وسط ${fa(m)} است. بزرگ‌ترین، ${fa((k-1)/2)} قدم بالاتر از وسط است و هر قدم ${fa(s)} تا: ${fa(m)} به‌علاوهٔ ${fa(s*(k-1)/2)} می‌شود ${fa(big)}.`};
+});
+
+G('squares','T','⬜','شمردن شکل‌ها',()=>{
+  const n=ri(3,5);let c=0;const parts=[];
+  for(let k=1;k<=n;k++){const w=(n-k+1)*(n-k+1);c+=w;parts.push(fa(w));}
+  const ch=numChoices(c,[n*n,n*n+(n-1)*(n-1)]);
+  return{q:`یک جدول ${fa(n)} در ${fa(n)} از خانه‌های کوچک یک‌در‌یک ساخته شده است. در این شکل در مجموع چند مربع (از هر اندازه) وجود دارد؟`,...ch,
+    trick:'اندازه به اندازه بشمار',
+    tech:`نظم داشته باش و مربع‌ها را اندازه به اندازه بشمار. مربع‌های یک در یک: ${fa(n*n)} تا. مربع‌های دو در دو: ${fa((n-1)*(n-1))} تا. و همین‌طور تا بزرگ‌ترین مربع که یکی است. جمع همه: ${parts.join(' به‌علاوهٔ ')} می‌شود ${fa(c)}. اگر فقط خانه‌های کوچک را بشماری، مربع‌های بزرگ‌تر را فراموش می‌کنی.`};
+});
+
+G('walk','T','🧭','سه‌تایی‌های قائم',()=>{
+  const [a0,b0,c]=pick([[3,4,5],[6,8,10],[9,12,15]]);
+  const [a,b]=rng()<.5?[a0,b0]:[b0,a0];
+  const ch=numChoices(c,[a+b,Math.abs(b-a),c+1]);
+  return{q:`مینا از خانه ${fa(a)} کیلومتر به سمت شرق و بعد ${fa(b)} کیلومتر به سمت شمال رفت. فاصلهٔ مستقیم او از خانه چند کیلومتر است؟`,...ch,
+    trick:'سه‌تایی سه، چهار، پنج',
+    tech:`مسیر مینا یک گوشهٔ قائمه می‌سازد و فاصلهٔ مستقیم، ضلع بلند مثلث قائم‌الزاویه است. سه‌تایی‌های معروف را حفظ کن: سه، چهار، پنج و دو برابر و سه برابرش یعنی شش، هشت، ده و نه، دوازده، پانزده. این‌جا ${fa(a)} و ${fa(b)} داریم، پس جواب ${fa(c)} است. جمع دو مسیر یعنی ${fa(a+b)} جواب نیست، چون راه مستقیم کوتاه‌تر است.`};
+});
+
+G('ages','T','🎂','مسئله‌ی سن',()=>{
+  const s=ri(6,13),d=ri(24,32),k=ri(2,5),S=2*s+d+2*k;
+  const ch=numChoices(s,[s+k,2*s,s+2]);
+  return{q:`پدر ${fa(d)} سال از پسرش بزرگ‌تر است. ${fa(k)} سال دیگر مجموع سن این دو نفر ${fa(S)} سال می‌شود. پسر الان چند ساله است؟`,...ch,
+    trick:'مجموع منهای فرق، دو برابر کوچک‌تر',
+    tech:`اول مجموع سن‌ها را به امروز برگردان: هر نفر ${fa(k)} سال جوان‌تر می‌شود، پس مجموع ${fa(2*k)} تا کم می‌شود: ${fa(S)} منهای ${fa(2*k)} می‌شود ${fa(S-2*k)}. حالا مجموعشان ${fa(S-2*k)} و فرقشان ${fa(d)} است. اگر فرق را از مجموع کم کنیم، دو برابر سن پسر می‌ماند: ${fa(S-2*k)} منهای ${fa(d)} می‌شود ${fa(2*s)}. نصفش، یعنی ${fa(s)}، سن پسر است.`};
+});
+
+G('order','T','📏','ترتیب و مقایسه',()=>{
+  const o=shuffle(NAMES).slice(0,4);
+  const facts=shuffle([0,1,2].map(i=>rng()<.5?`${o[i]} از ${o[i+1]} بلندقدتر است.`:`${o[i+1]} از ${o[i]} کوتاه‌قدتر است.`));
+  const r=ri(1,4);
+  const label=['بلندقدترین نفر','دومین نفر از نظر بلندقدی','سومین نفر از نظر بلندقدی','کوتاه‌قدترین نفر'][r-1];
+  const arr=shuffle(o);
+  return{q:`${facts.join(' ')}<br>${label} کیست؟`,opts:arr,ans:arr.indexOf(o[r-1]),
+    trick:'روی یک خط بچین',
+    tech:`یک خط بکش و آدم‌ها را از بلند به کوتاه روی آن بچین. جمله‌ها را یکی‌یکی روی خط بگذار تا به این ترتیب برسی: ${o.join('، ')}. حالا ${label} می‌شود ${o[r-1]}. نکته: جمله‌های «کوتاه‌قدتر» را برعکس کن تا همهٔ جمله‌ها یک جهت داشته باشند.`};
+});
+
+G('cube','T','🧊','مکعب رنگ‌شده',()=>{
+  const n=ri(4,5),v=ri(0,1);let c,txt,near,tech;
+  if(v===0){
+    c=12*(n-2);txt='دقیقاً دو وجه رنگی';near=[12*n,8,6*(n-2)*(n-2),12*(n-1)];
+    tech=`مکعب‌هایی که دقیقاً دو وجه رنگی دارند، روی یال‌های مکعب بزرگ هستند ولی گوشه نیستند. مکعب بزرگ ${fa(12)} یال دارد و روی هر یال ${fa(n)} منهای دو، یعنی ${fa(n-2)} مکعب وسطی است. ${fa(12)} ضرب در ${fa(n-2)} می‌شود ${fa(c)}. گوشه‌ها سه وجه رنگی دارند و هشت تا هستند.`;
+  }else{
+    c=(n-2)**3;txt='هیچ وجه رنگی';near=[6*(n-2)*(n-2),(n-2)*(n-2),n*n*n-8];
+    tech=`مکعب‌های بدون رنگ، مکعب‌های داخل هستند. لایهٔ بیرونی را از هر طرف بردار؛ از هر ضلع دو تا کم می‌شود: ${fa(n)} منهای دو می‌شود ${fa(n-2)}. یک مکعب ${fa(n-2)} در ${fa(n-2)} در ${fa(n-2)} می‌ماند که ${fa(c)} مکعب کوچک دارد.`;
+  }
+  const ch=numChoices(c,near);
+  return{q:`یک مکعب ${fa(n)} در ${fa(n)} در ${fa(n)} را کاملاً رنگ می‌کنیم و بعد آن را به ${fa(n**3)} مکعب کوچک یک‌در‌یک می‌بُریم. چند مکعب کوچک ${txt} دارند؟`,...ch,
+    trick:v===0?'یال‌ها را بشمار':'لایهٔ بیرونی را بردار',tech};
+});
+
+G('avg','T','📊','میانگین و مجموع',()=>{
+  let n,a,b,need,t=0;
+  do{n=ri(3,5);a=ri(12,17);b=a+ri(1,2);need=b*(n+1)-a*n;t++;}while((need>20||need<1)&&t<200);
+  if(need>20||need<1){n=4;a=14;b=15;need=19;}
+  const ch=numChoices(need,[b,need-1,need+1]);
+  return{q:`میانگین نمرات ${fa(n)} آزمون ریاضی علی ${fa(a)} است. او در آزمون بعدی چه نمره‌ای بگیرد تا میانگین ${fa(n+1)} آزمون برابر ${fa(b)} شود؟ (نمره‌ها از ۲۰ هستند)`,...ch,
+    trick:'میانگین را به مجموع تبدیل کن',
+    tech:`به‌جای میانگین، «مجموع» را بساز. مجموع قبلی: ${fa(n)} ضرب در ${fa(a)} می‌شود ${fa(n*a)}. مجموع لازم برای ${fa(n+1)} آزمون: ${fa(n+1)} ضرب در ${fa(b)} می‌شود ${fa((n+1)*b)}. فرق این دو، نمرهٔ لازم است: ${fa((n+1)*b)} منهای ${fa(n*a)} می‌شود ${fa(need)}.`};
+});
+
+const PREM=[
+  {q:'سارا می‌گوید: «این کتاب گران است، پس حتماً کتاب خوبی است.» این استدلال بر کدام پیش‌فرض ساخته شده است؟',
+   ok:'هر چیز گران‌تر، باکیفیت‌تر است.',bad:['کتاب‌های خوب همیشه ارزان هستند.','سارا این کتاب را قبلاً خوانده است.','همهٔ مردم کتاب‌های گران می‌خرند.']},
+  {q:'رضا می‌گوید: «تیم ما حتماً برنده می‌شود، چون بازیکنانش پیراهن قرمز پوشیده‌اند.» این استدلال بر کدام پیش‌فرض ساخته شده است؟',
+   ok:'پوشیدن پیراهن قرمز شانس برد را زیاد می‌کند.',bad:['تیم‌های دیگر پیراهن آبی پوشیده‌اند.','رضا طرفدار تیم خودش است.','فوتبال بدون پیراهن برگزار نمی‌شود.']},
+  {q:'مینا می‌گوید: «علی هر روز با دوچرخه به مدرسه می‌رود و شاگرد اول است؛ پس دوچرخه‌سواری باعث شاگرد اولی می‌شود.» این استدلال بر کدام پیش‌فرض ساخته شده است؟',
+   ok:'عامل دیگری باعث شاگرد اولی علی نشده است.',bad:['علی دوچرخهٔ گران‌قیمت دارد.','مدرسه نزدیک خانهٔ علی است.','همهٔ دانش‌آموزان با دوچرخه به مدرسه می‌روند.']}
+];
+G('premise','T','🧩','پیش‌فرض',()=>{
+  const p=pick(PREM),c=txtChoices(p.ok,shuffle(p.bad));
+  return{q:p.q,...c,trick:'حلقهٔ گم‌شده بین دلیل و نتیجه',
+    tech:`پیش‌فرض یعنی حلقهٔ گم‌شده بین «دلیل» و «نتیجه». اول دلیل و نتیجه را جدا کن. بعد از خودت بپرس: برای این‌که این دلیل، آن نتیجه را ثابت کند، چه چیزی باید بی‌صدا فرض شده باشد؟ گزینه‌ای که این حلقه را پر می‌کند درست است: «${p.ok}» گزینه‌هایی که فقط دور موضوع می‌چرخند پیش‌فرض نیستند.`};
+});
+
+G('liar','T','🕵️','راستگو و دروغگو',()=>{
+  const p=shuffle(NAMES).slice(0,3),L=p[0],M=p[1],N=p[2];
+  const st=shuffle([`${N} می‌گوید: «${M} راستگو است.»`,`${M} می‌گوید: «${L} دروغگو است.»`,`${L} می‌گوید: «من راستگو هستم.»`]);
+  const c=txtChoices(L,[M,N,'نمی‌توان فهمید']);
+  return{q:`سه نفر ${p.join('، ')} هستند و دقیقاً یکی از آن‌ها دروغگو است (دروغگو همیشه دروغ می‌گوید و بقیه همیشه راست.)<br>${st.join(' ')}<br>دروغگو کیست؟`,...c,
+    trick:'هر نفر را دروغگو فرض کن و امتحان کن',
+    tech:`هر نفر را به نوبت «دروغگو» فرض کن و ببین به تناقض می‌رسی یا نه. اگر ${N} دروغگو باشد، حرفش دربارهٔ ${M} غلط است و ${M} هم باید دروغگو باشد، یعنی دو دروغگو داریم و این ممکن نیست. اگر ${M} دروغگو باشد، حرفش دربارهٔ ${L} غلط است و ${L} هم دروغگو می‌شود، باز هم دو دروغگو. فقط وقتی ${L} دروغگو باشد همه‌چیز درست درمی‌آید: او گفته «من راستگو هستم» و این دروغ است.`};
+});
+
+const RULES=[
+  {t:'بر ۳ بخش‌پذیر است',f:(s,l)=>s%3===0,how:s=>`برای سه، جمع رقم‌ها باید بر سه بخش‌پذیر باشد.`},
+  {t:'بر ۹ بخش‌پذیر است',f:(s,l)=>s%9===0,how:s=>`برای نه، جمع رقم‌ها باید بر نه بخش‌پذیر باشد.`},
+  {t:'بر ۲ و ۳ هر دو بخش‌پذیر است',f:(s,l)=>s%3===0&&l%2===0,how:s=>`برای دو، رقم آخر باید زوج باشد و برای سه، جمع رقم‌ها باید بر سه بخش‌پذیر باشد. اول رقم آخر را نگاه کن و گزینه‌های فرد را حذف کن.`},
+  {t:'بر ۳ بخش‌پذیر است ولی بر ۲ بخش‌پذیر نیست',f:(s,l)=>s%3===0&&l%2===1,how:s=>`رقم آخر باید فرد باشد و جمع رقم‌ها باید بر سه بخش‌پذیر باشد. اول گزینه‌هایی که رقم آخرشان زوج است را حذف کن.`}
+];
+const dsum=d=>d.reduce((a,b)=>a+b,0);
+G('div','S','➗','بخش‌پذیری',()=>{
+  for(let t=0;t<800;t++){
+    const r=pick(RULES);
+    const nums=[0,1,2,3].map(()=>{const d=[ri(1,9)];for(let i=0;i<7;i++)d.push(ri(0,9));return d;});
+    const ok=nums.map(d=>r.f(dsum(d),d[d.length-1]));
+    if(ok.filter(Boolean).length!==1)continue;
+    const idx=ok.indexOf(true),d=nums[idx];
+    return{q:`کدام عدد ${r.t}؟`,opts:nums.map(x=>`<span dir="ltr">${fa(x.join(''))}</span>`),ans:idx,
+      trick:'جمع رقم‌ها را بگیر',
+      tech:`عدد کامل را تقسیم نکن، فقط رقم‌ها را بررسی کن. ${r.how()} در گزینهٔ درست جمع رقم‌ها ${d.map(fa).join(' به‌علاوهٔ ')} است که می‌شود ${fa(dsum(d))}. در بقیهٔ گزینه‌ها شرط برقرار نیست. وقتی رقم‌های ۳ و ۶ و ۹ کنار هم باشند، می‌توانی آن‌ها را سه‌تا‌سه‌تا جمع کنی تا سریع‌تر شود.`};
+  }
+  return gens[0].fn();
+});
+
+G('twins','S','👯','دوقلوها',()=>{
+  let d,c,pairs;
+  do{d=Array.from({length:16},()=>ri(0,9));pairs=[];for(let i=0;i<15;i++)if(Math.abs(d[i]-d[i+1])===1)pairs.push(`${fa(d[i])}${fa(d[i+1])}`);c=pairs.length;}while(c<2||c>7);
+  const ch=numChoices(c,[c+1,c-1]);
+  return{q:`هر وقت دو رقم کنار هم دقیقاً یک واحد اختلاف داشته باشند به آن‌ها «دوقلو» می‌گوییم. در عدد زیر چند دوقلو وجود دارد؟<span class="digits">${fa(d.join(''))}</span>`,...ch,
+    trick:'جفت‌های هم‌جوار را با انگشت چک کن',
+    tech:`از اول عدد شروع کن و هر رقم را فقط با رقم بعدی‌اش مقایسه کن. هر بار که اختلافشان دقیقاً یک بود، یک علامت بزن. رقم‌های برابر دوقلو نیستند چون اختلافشان صفر است. در این عدد دوقلوها این‌ها هستند: ${pairs.join('، ')}. جمعاً ${fa(c)} تا. دقت کن که یک رقم می‌تواند در دو دوقلو شرکت کند، مثل دو و سه و چهار که دو دوقلو می‌سازند.`};
+});
+
+G('letters','S','🔤','شمردن حرف',()=>{
+  const L=['ب','ر','س','م','ک','ن','د','ت'];let arr,tg,c;
+  do{arr=Array.from({length:24},()=>pick(L));tg=pick(L);c=arr.filter(x=>x===tg).length;}while(c<3||c>7);
+  const ch=numChoices(c,[c+1,c-1]);
+  return{q:`حرف «${tg}» در این ردیف چند بار آمده است؟<span class="letters">${arr.join(' ')}</span>`,...ch,
+    trick:'فقط یک حرف را دنبال کن',
+    tech:`فقط یک حرف را در ذهن نگه دار، یعنی «${tg}». ردیف را یک بار از اول تا آخر با انگشت بخوان و هر بار که دیدی شمارش را یکی زیاد کن. بهتر است ردیف را چهارتا‌چهارتا ببینی تا حرف‌های شبیه هم را قاطی نکنی. جواب ${fa(c)} است.`};
+});
+
+G('code','S','🔐','رمزگذاری',()=>{
+  const sy=shuffle(['■','▲','●','◆','★','✚','☾','♥','♣','♠']);
+  const dg=[0,1,2,3,4,5,6,7,8,9];
+  const nd=[ri(1,9)];while(nd.length<4){const x=ri(0,9);if(!nd.includes(x))nd.push(x);}
+  const enc=a=>a.map(x=>sy[x]).join('');
+  const right=enc(nd);const wr=new Set();
+  const sw=nd.slice();[sw[1],sw[2]]=[sw[2],sw[1]];wr.add(enc(sw));
+  const rv=nd.slice().reverse();wr.add(enc(rv));
+  const ch1=nd.slice();ch1[3]=(ch1[3]+1)%10;wr.add(enc(ch1));
+  const ch2=nd.slice();ch2[0]=(ch2[0]+9)%10;wr.add(enc(ch2));
+  wr.delete(right);
+  const c=txtChoices(right,shuffle([...wr]));
+  const tbl=`<table><tr>${dg.map(x=>`<td>${fa(x)}</td>`).join('')}</tr><tr>${dg.map(x=>`<td>${sy[x]}</td>`).join('')}</tr></table>`;
+  return{q:`${tbl}با توجه به جدول رمز، عدد <b>${fa(nd.join(''))}</b> به کدام گزینه تبدیل می‌شود؟`,...c,
+    trick:'گزینه‌ها را از اول و آخر حذف کن',
+    tech:`هر رقم را جداگانه در جدول پیدا کن، ولی همهٔ گزینه‌ها را کامل ترجمه نکن. اول فقط رمز رقم اول را پیدا کن و گزینه‌هایی که با آن شروع نمی‌شوند را خط بزن. بعد رمز رقم آخر را پیدا کن و دوباره حذف کن. معمولاً قبل از رسیدن به رقم‌های وسط فقط یک گزینه می‌ماند. دقت کن که ترتیب رقم‌ها مهم است و جای دو رقم وسط را عوض نکنی.`};
+});
+
+const SPELL=[
+  {bad:'ظعیف',good:'ضعیف',ok:['قاطع','صدا','ثروت']},
+  {bad:'غضاوت',good:'قضاوت',ok:['حضور','ثابت','طلوع']},
+  {bad:'احتمام',good:'احترام',ok:['مسئول','غرور','ضرورت']},
+  {bad:'ثعادت',good:'سعادت',ok:['عذاب','ظرف','غنیمت']},
+  {bad:'مظلوب',good:'مطلوب',ok:['خواهش','اظهار','حرارت']},
+  {bad:'اتفاغ',good:'اتفاق',ok:['تحصیل','صنعت','ذخیره']},
+  {bad:'زکاوت',good:'ذکاوت',ok:['ظهور','صبر','غیرت']},
+  {bad:'حزف',good:'حذف',ok:['عزم','ضمیر','اثر']}
+];
+G('spell','S','✍️','غلط املایی',()=>{
+  const p=pick(SPELL),c=txtChoices(p.bad,p.ok);
+  return{q:'در کدام گزینه غلط املایی وجود دارد؟',...c,
+    trick:'اول سراغ حرف‌های هم‌صدا برو',
+    tech:`قبل از هر کاری سراغ حرف‌های هم‌صدا برو، چون غلط املایی معمولاً همان‌جاست: زی و ذال و ضاد و ظا، سین و ثا و صاد، تا و طا، قاف و غین، ها و حا. در گزینهٔ «${p.bad}» باید «${p.good}» نوشته شود.`};
+});
+
+const CAT={T:'استعداد تحلیلی',S:'سرعت و دقت'};
+const RAR={gold:'طلایی',silver:'نقره‌ای',bronze:'برنزی'};
+const LIM={T:[30,60],S:[12,25]};
+let S={points:0,cards:[],totals:{gold:0,silver:0,bronze:0},stats:{},daily:null,voice:true};
+const KEY='tz-state';
+async function load(){try{const v=localStorage.getItem(KEY);if(v)S={...S,...JSON.parse(v)};}catch(e){}}
+async function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const today=()=>new Date().toLocaleDateString('en-CA');
+
+const canSpeak='speechSynthesis' in window;
+const faVoice=()=>canSpeak?(speechSynthesis.getVoices().find(v=>/^fa/i.test(v.lang))||null):null;
+function stopSpeech(){if(canSpeak)speechSynthesis.cancel();}
+function speak(text){
+  if(!canSpeak)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='fa-IR';u.rate=.9;
+  const v=faVoice();if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+if(canSpeak)speechSynthesis.onvoiceschanged=()=>{};
+
+function planFor(mode){
+  const slots=mode==='T'?Array(10).fill('T'):mode==='S'?Array(10).fill('S'):['T','T','S','T','S','T','T','S','T','S'];
+  const used={},out=[];
+  slots.forEach(cat=>{
+    const cand=gens.filter(g=>g.cat===cat);
+    const w=cand.map(g=>{const st=S.stats[g.id];const miss=st&&st.total?1-st.ok/st.total:.3;return(1+2*miss)*(used[g.id]?.25:1);});
+    let r=rng()*w.reduce((a,b)=>a+b,0),i=0;
+    for(;i<w.length-1;i++){r-=w[i];if(r<=0)break;}
+    used[cand[i].id]=(used[cand[i].id]||0)+1;out.push(cand[i]);
+  });
+  return shuffle(out);
+}
+function build(g){
+  for(let t=0;t<5;t++){try{const q=g.fn();return{id:g.id,cat:g.cat,icon:g.icon,skill:g.skill,...q};}catch(e){}}
+  return null;
+}
+function startQuiz(mode){
+  const isDaily=mode==='daily'&&!(S.daily&&S.daily.date===today());
+  rng=isDaily?seeded('tz-'+today()):Math.random;
+  const m=mode==='daily'?'mix':mode;
+  const qs=planFor(m).map(build).filter(Boolean);
+  rng=Math.random;
+  Q={mode,isDaily,qs,i:0,sel:null,res:[],pts:0,streak:0,earned:[],t0:Date.now(),secs:0};
+  view='quiz';render();
+}
+
+const app=document.getElementById('app');
+let view='home',Q=null,timer=null;
+function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
+function render(){stopTimer();({home,quiz,sum:summary,cards})[view]();window.scrollTo(0,0);}
+
+function cardHTML(c,pop){
+  return`<div class="tcard r-${c.rar} ${pop?'pop':''}"><div class="tt"><span>${RAR[c.rar]}</span><span>${fa(c.pts)}+</span></div><div class="ti">${c.icon}</div><div class="tn">${c.skill}</div><div class="tf">${fa(c.secs)} ثانیه</div></div>`;
+}
+
+function home(){
+  const doneToday=S.daily&&S.daily.date===today();
+  const rows=gens.filter(g=>S.stats[g.id]&&S.stats[g.id].total).map(g=>{
+    const st=S.stats[g.id],p=Math.round(100*st.ok/st.total);
+    return`<div class="skill"><span>${g.icon} ${g.skill}</span><span>${fa(st.ok)} از ${fa(st.total)}</span><div class="bar"><i class="${p<60?'low':''}" style="width:${p}%"></i></div></div>`;
+  }).join('');
+  app.innerHTML=`
+  <div class="top"><div><h1>تمرین تیزهوشان</h1><p class="sub">هر روز ده سوال تازه، با ترفند حل سریع</p></div>
+  <div class="chips"><span class="chip">${fa(S.points)} امتیاز</span><span class="chip">${fa(S.cards.length)} کارت</span></div></div>
+  <div class="stack">
+    <button class="btn main" data-act="daily">${doneToday?'ده سوال تازه دیگر':'تمرین امروز'}<small>${doneToday?`امروز ${fa(S.daily.ok)} از ${fa(10)} درست بود`:'شش سوال تحلیلی و چهار سوال سرعت و دقت'}</small></button>
+  </div>
+  <div class="row">
+    <button class="btn" data-act="mode" data-m="T">تحلیلی و هوش<small>ده سوال فکری</small></button>
+    <button class="btn" data-act="mode" data-m="S">سرعت و دقت<small>ده سوال سریع</small></button>
+  </div>
+  <div class="row"><button class="btn" data-act="cards">کارت‌های من<small>${fa(S.totals.gold)} طلایی، ${fa(S.totals.silver)} نقره‌ای، ${fa(S.totals.bronze)} برنزی</small></button>
+  ${canSpeak?`<button class="btn" data-act="voice">صدای ترفند<small>${S.voice?'روشن':'خاموش'}</small></button>`:'<span></span>'}</div>
+  <h2>مهارت‌های من</h2>${rows||'<p class="hint">بعد از اولین تمرین، درصد درستی هر مهارت این‌جا دیده می‌شود. سوال‌های بعدی بیشتر از مهارت‌های ضعیف‌تر انتخاب می‌شوند.</p>'}`;
+}
+
+function quiz(){
+  const q=Q.qs[Q.i],done=Q.sel!==null;
+  const lim=LIM[q.cat];
+  app.innerHTML=`
+  <div class="bar"><button class="ghost" data-act="home">خروج</button>
+  <div class="prog">${Q.qs.map((_,k)=>`<i class="${k<Q.i?(Q.res[k]?'ok':'no'):k===Q.i?'cur':''}"></i>`).join('')}</div>
+  <span class="chip" id="tm">${fa(done?Q.secs:0)}</span></div>
+  <section class="qcard"><div class="qmeta"><span>${q.icon} ${q.skill}</span><span>${CAT[q.cat]}</span></div><div class="qtext">${q.q}</div></section>
+  <div class="opts">${q.opts.map((o,k)=>{
+    const cls=done?(k===q.ans?'right':k===Q.sel?'wrong':'dim'):'';
+    return`<button class="opt ${cls}" data-act="pick" data-i="${k}" ${done?'disabled':''}><b>${fa(k+1)}</b><span>${o}</span></button>`;}).join('')}</div>
+  ${done?feedback(q):`<p class="goal">برای کارت طلایی زیر ${fa(lim[0])} ثانیه و برای نقره‌ای زیر ${fa(lim[1])} ثانیه جواب بده</p>`}`;
+  if(!done){
+    Q.t0=Date.now();
+    timer=setInterval(()=>{const el=document.getElementById('tm');if(el)el.textContent=fa(Math.round((Date.now()-Q.t0)/1000));},1000);
+  }
+}
+
+function feedback(q){
+  const ok=Q.sel===q.ans,last=Q.i===Q.qs.length-1;
+  const nv=!faVoice()&&canSpeak;
+  const card=ok&&Q.lastCard?`<div class="reward">${cardHTML(Q.lastCard,true)}<p>کارت ${RAR[Q.lastCard.rar]} گرفتی<small>${fa(Q.lastCard.pts)} امتیاز به حسابت اضافه شد</small></p></div>`:'';
+  return`<div class="fb">
+    <p class="verdict ${ok?'ok':'no'}">${ok?'درسته!':`این بار نشد. جواب درست گزینهٔ ${fa(q.ans+1)} بود.`}</p>
+    ${card}
+    <div class="tip"><h3>ترفند: ${q.trick}</h3><p>${q.tech}</p>
+      <div class="acts">${canSpeak?`<button class="ghost" data-act="say">بخوان</button><button class="ghost" data-act="stop">توقف</button>`:''}</div>
+      ${nv&&canSpeak?`<p class="note">صدای فارسی روی این دستگاه پیدا نشد. اگر صدایی نیامد، در تنظیمات گوشی موتور «تبدیل متن به گفتار» فارسی را فعال کن.</p>`:''}
+    </div>
+    <button class="btn main" data-act="next">${last?'دیدن نتیجه':'سوال بعدی'}</button></div>`;
+}
+
+function summary(){
+  const ok=Q.res.filter(Boolean).length;
+  const wrongSkills={};Q.qs.forEach((q,i)=>{if(!Q.res[i])wrongSkills[q.skill]=1;});
+  const weak=Object.keys(wrongSkills);
+  app.innerHTML=`
+  <div class="sum"><p class="hint">نتیجهٔ این تمرین</p><div class="big">${fa(ok)} از ${fa(Q.qs.length)}</div><p class="verdict ok">${fa(Q.pts)} امتیاز گرفتی</p></div>
+  ${Q.earned.length?`<h2>کارت‌های این دور</h2><div class="strip">${Q.earned.map(c=>cardHTML(c)).join('')}</div>`:''}
+  ${weak.length?`<p class="hint">برای دور بعد روی این‌ها بیشتر کار کن: ${weak.join('، ')}</p>`:'<p class="hint">همه را درست زدی. عالی بود!</p>'}
+  <div class="stack" style="margin-top:18px"><button class="btn main" data-act="mode" data-m="mix">ده سوال تازه دیگر</button><button class="btn" data-act="home">برگشت به خانه</button></div>`;
+}
+
+function cards(){
+  app.innerHTML=`<div class="bar"><button class="ghost" data-act="home">برگشت</button><h1 style="font-size:22px">کارت‌های من</h1></div>
+  <div class="tot"><span class="chip"><i class="dotg"></i>${fa(S.totals.gold)} طلایی</span><span class="chip"><i class="dots"></i>${fa(S.totals.silver)} نقره‌ای</span><span class="chip"><i class="dotb"></i>${fa(S.totals.bronze)} برنزی</span></div>
+  ${S.cards.length?`<div class="grid">${S.cards.map(c=>cardHTML(c)).join('')}</div>`:'<p class="hint" style="margin-top:16px">هنوز کارتی نداری. هر جواب درست یک کارت می‌دهد و هرچه سریع‌تر جواب بدهی، کارت ارزشمندتر است.</p>'}`;
+}
+
+function answer(i){
+  const q=Q.qs[Q.i];if(Q.sel!==null)return;
+  stopTimer();
+  Q.sel=i;Q.secs=Math.round((Date.now()-Q.t0)/1000);Q.lastCard=null;
+  const ok=i===q.ans;Q.res[Q.i]=ok;
+  const st=S.stats[q.id]||(S.stats[q.id]={ok:0,total:0});st.total++;
+  if(ok){
+    st.ok++;Q.streak++;
+    const lim=LIM[q.cat];
+    const rar=Q.secs<=lim[0]?'gold':Q.secs<=lim[1]?'silver':'bronze';
+    const pts=10+{gold:5,silver:3,bronze:0}[rar]+Math.min(Q.streak,5);
+    const c={icon:q.icon,skill:q.skill,rar,pts,secs:Q.secs};
+    Q.pts+=pts;S.points+=pts;S.totals[rar]++;S.cards.unshift(c);S.cards=S.cards.slice(0,90);
+    Q.earned.push(c);Q.lastCard=c;
+  }else{Q.streak=0;}
+  save();render();
+  if(!ok&&S.voice)speak(q.tech);
+}
+function next(){
+  stopSpeech();
+  if(Q.i>=Q.qs.length-1){
+    if(Q.isDaily){S.daily={date:today(),ok:Q.res.filter(Boolean).length};save();}
+    view='sum';render();return;
+  }
+  Q.i++;Q.sel=null;Q.lastCard=null;render();
+}
+
+app.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act;
+  if(a==='daily')startQuiz('daily');
+  else if(a==='mode')startQuiz(b.dataset.m);
+  else if(a==='pick')answer(+b.dataset.i);
+  else if(a==='next')next();
+  else if(a==='home'){stopSpeech();view='home';render();}
+  else if(a==='cards'){view='cards';render();}
+  else if(a==='voice'){S.voice=!S.voice;if(!S.voice)stopSpeech();save();render();}
+  else if(a==='say')speak(Q.qs[Q.i].tech);
+  else if(a==='stop')stopSpeech();
+});
+
+load().then(render);
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
